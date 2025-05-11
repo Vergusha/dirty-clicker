@@ -9,7 +9,7 @@ import {
 } from '@/constants/Sounds';
 
 export default function HomeScreen() {
-  const { clicks, clickPower, passiveIncome, addClicks } = useGameState();
+  const { dilithium, clickPower, passiveIncome, addDilithium } = useGameState();
   const [settingsVisible, setSettingsVisible] = useState(false);
   const [planetScale, setPlanetScale] = useState(1);
 
@@ -26,7 +26,7 @@ export default function HomeScreen() {
   // Function to handle button click with sound
   const handleClick = () => {
     playClickSound();
-    addClicks(clickPower);
+    addDilithium(clickPower);
     
     // Анимация нажатия - планета немного уменьшается и возвращается к исходному размеру
     setPlanetScale(0.95);
@@ -50,7 +50,15 @@ export default function HomeScreen() {
       resizeMode="cover"
     >
       <View style={styles.container}>
-        <Text style={styles.counter}>Кликов: {clicks}</Text>
+        <View style={styles.resourceContainer}>
+          <Image
+            source={require('@/assets/images/dilithium.png')}
+            style={styles.dilithiumIcon}
+            resizeMode="contain"
+          />
+          <Text style={styles.counter}>Дилитий: {dilithium}</Text>
+        </View>
+        
         {passiveIncome > 0 && (
           <Text style={styles.passive}>+{passiveIncome} в секунду</Text>
         )}
@@ -103,10 +111,20 @@ const styles = StyleSheet.create({
     alignItems: 'center', 
     backgroundColor: 'rgba(0, 0, 0, 0.3)',
   },
+  resourceContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 8,
+  },
+  dilithiumIcon: {
+    width: 36,
+    height: 36,
+    marginRight: 10,
+  },
   counter: {
     fontSize: 36, 
-    color: 'white', 
-    marginBottom: 8,
+    color: 'white',
     textShadowColor: 'rgba(0, 0, 0, 0.75)',
     textShadowOffset: { width: 1, height: 1 },
     textShadowRadius: 3,

@@ -1,11 +1,11 @@
 import React from 'react';
-import { ImageBackground, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Image, ImageBackground, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 
 import { useGameState } from '@/constants/GameState';
 
 export default function UpgradesScreen() {
   const {
-    clicks,
+    dilithium,
     clickPower,
     clickPowerLevel,
     clickPowerCost,
@@ -74,9 +74,14 @@ export default function UpgradesScreen() {
             style={[styles.upgradeButton, disabled && styles.disabledButton]}
             resizeMode="stretch"
           >
-            <Text style={styles.upgradeButtonText}>
-              {cost} 👆
-            </Text>
+            <View style={styles.costContainer}>
+              <Text style={styles.upgradeButtonText}>{cost}</Text>
+              <Image 
+                source={require('@/assets/images/dilithium.png')}
+                style={styles.dilithiumIcon}
+                resizeMode="contain"
+              />
+            </View>
           </ImageBackground>
         </Pressable>
       </View>
@@ -86,7 +91,14 @@ export default function UpgradesScreen() {
   return (
     <View style={styles.container}>
       <Text style={styles.headerText}>Улучшения</Text>
-      <Text style={styles.clicksCounter}>Доступно кликов: {clicks}</Text>
+      <View style={styles.resourceContainer}>
+        <Image
+          source={require('@/assets/images/dilithium.png')}
+          style={styles.headerDilithiumIcon}
+          resizeMode="contain"
+        />
+        <Text style={styles.clicksCounter}>Доступно: {dilithium}</Text>
+      </View>
       
       <ScrollView style={styles.upgradesContainer}>
         {/* Basic Upgrades */}
@@ -100,18 +112,18 @@ export default function UpgradesScreen() {
           `Текущая сила: +${clickPower}`,
           clickPowerCost,
           upgradeClickPower,
-          clicks < clickPowerCost
+          dilithium < clickPowerCost
         )}
 
         {/* Passive Income Upgrade */}
         {renderUpgradeCard(
           "Пассивный доход",
-          "Добавляет +1 клик в секунду",
+          "Добавляет +1 дилитий в секунду",
           passiveIncomeLevel,
           `Текущий доход: +${passiveIncome}/сек`,
           passiveIncomeCost,
           upgradePassiveIncome,
-          clicks < passiveIncomeCost
+          dilithium < passiveIncomeCost
         )}
 
         {/* Enhanced Upgrades */}
@@ -125,18 +137,18 @@ export default function UpgradesScreen() {
           `Бонус к силе: +${enhancedClickLevel * 5}`,
           enhancedClickCost,
           upgradeEnhancedClick,
-          clicks < enhancedClickCost
+          dilithium < enhancedClickCost
         )}
         
         {/* Fast Flow Upgrade */}
         {renderUpgradeCard(
           "Быстрый поток",
-          "Добавляет +6 кликов в секунду",
+          "Добавляет +6 дилития в секунду",
           fastFlowLevel,
           `Бонус к доходу: +${fastFlowLevel * 6}/сек`,
           fastFlowCost,
           upgradeFastFlow,
-          clicks < fastFlowCost
+          dilithium < fastFlowCost
         )}
         
         {/* Advanced Upgrades */}
@@ -150,18 +162,18 @@ export default function UpgradesScreen() {
           `Бонус к силе: +${powerfulHitLevel * 100}`,
           powerfulHitCost,
           upgradePowerfulHit,
-          clicks < powerfulHitCost
+          dilithium < powerfulHitCost
         )}
         
         {/* Golden Shower Upgrade */}
         {renderUpgradeCard(
           "Золотой дождь",
-          "Добавляет +200 кликов в секунду",
+          "Добавляет +200 дилития в секунду",
           goldenShowerLevel,
           `Бонус к доходу: +${goldenShowerLevel * 200}/сек`,
           goldenShowerCost,
           upgradeGoldenShower,
-          clicks < goldenShowerCost
+          dilithium < goldenShowerCost
         )}
         
         {/* Elite Upgrades */}
@@ -175,18 +187,18 @@ export default function UpgradesScreen() {
           `Бонус к силе: +${giantStrengthLevel * 1000}`,
           giantStrengthCost,
           upgradeGiantStrength,
-          clicks < giantStrengthCost
+          dilithium < giantStrengthCost
         )}
         
         {/* Click Machine Upgrade */}
         {renderUpgradeCard(
           "Клик-машина",
-          "Добавляет +5000 кликов в секунду",
+          "Добавляет +5000 дилития в секунду",
           clickMachineLevel,
           `Бонус к доходу: +${clickMachineLevel * 5000}/сек`,
           clickMachineCost,
           upgradeClickMachine,
-          clicks < clickMachineCost
+          dilithium < clickMachineCost
         )}
       </ScrollView>
     </View>
@@ -207,10 +219,20 @@ const styles = StyleSheet.create({
     marginBottom: 8,
     textAlign: 'center',
   },
+  resourceContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 20,
+  },
+  headerDilithiumIcon: {
+    width: 24,
+    height: 24,
+    marginRight: 8,
+  },
   clicksCounter: {
     fontSize: 20,
     color: '#4CAF50',
-    marginBottom: 20,
     textAlign: 'center',
   },
   upgradesContainer: {
@@ -274,6 +296,16 @@ const styles = StyleSheet.create({
     height: 50,
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  costContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  dilithiumIcon: {
+    width: 20,
+    height: 20,
+    marginLeft: 6,
   },
   disabledButton: {
     opacity: 0.5,

@@ -8,7 +8,6 @@ import {
     toggleAmbientMusic,
     toggleSoundEffects
 } from '@/constants/Sounds';
-import { MaterialIcons } from '@expo/vector-icons';
 import React, { useEffect, useState } from 'react';
 import { Dimensions, Image, ImageBackground, Modal, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import CustomSlider from './CustomSlider';
@@ -97,11 +96,14 @@ export default function SettingsModal({ visible, onClose }: SettingsModalProps) 
                   thumbTintColor="#4CAF50"
                   disabled={!soundEffectsEnabled}
                 />
-                <TouchableOpacity onPress={handleSoundEffectsToggle}>
-                  <MaterialIcons 
-                    name={soundEffectsEnabled ? "volume-up" : "volume-off"} 
-                    size={24} 
-                    color="#FFFFFF" 
+                <TouchableOpacity onPress={handleSoundEffectsToggle} style={styles.soundButton}>
+                  <Image
+                    source={soundEffectsEnabled 
+                      ? require('@/assets/images/volume_on.png')
+                      : require('@/assets/images/volume_off.png')
+                    }
+                    style={styles.soundIcon}
+                    resizeMode="contain"
                   />
                 </TouchableOpacity>
               </View>
@@ -121,11 +123,14 @@ export default function SettingsModal({ visible, onClose }: SettingsModalProps) 
                   thumbTintColor="#4CAF50"
                   disabled={!ambientEnabled}
                 />
-                <TouchableOpacity onPress={handleAmbientToggle}>
-                  <MaterialIcons 
-                    name={ambientEnabled ? "volume-up" : "volume-off"} 
-                    size={24} 
-                    color="#FFFFFF" 
+                <TouchableOpacity onPress={handleAmbientToggle} style={styles.soundButton}>
+                  <Image
+                    source={ambientEnabled 
+                      ? require('@/assets/images/volume_on.png')
+                      : require('@/assets/images/volume_off.png')
+                    }
+                    style={styles.soundIcon}
+                    resizeMode="contain"
                   />
                 </TouchableOpacity>
               </View>
@@ -219,6 +224,16 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   closeButton: {
+    width: 32,
+    height: 32,
+  },
+  soundButton: {
+    width: 32,
+    height: 32,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  soundIcon: {
     width: 32,
     height: 32,
   },

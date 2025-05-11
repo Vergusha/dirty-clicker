@@ -3,7 +3,7 @@ import { playUpgradeSound } from './Sounds';
 
 // Game state interface
 interface GameState {
-  clicks: number;
+  dilithium: number; // Переименовано с clicks на dilithium
   clickPower: number;
   clickPowerLevel: number;
   clickPowerCost: number;
@@ -26,7 +26,7 @@ interface GameState {
   clickMachineCost: number;
   
   // Actions
-  addClicks: (amount: number) => void;
+  addDilithium: (amount: number) => void; // Переименовано с addClicks на addDilithium
   upgradeClickPower: () => void;
   upgradePassiveIncome: () => void;
   
@@ -52,7 +52,7 @@ const UPGRADE_COST_MULTIPLIER = 1.15;
 
 // Create context with default values
 const GameStateContext = createContext<GameState>({
-  clicks: 0,
+  dilithium: 0, // Переименовано с clicks на dilithium
   clickPower: 1,
   clickPowerLevel: 0,
   clickPowerCost: BASE_CLICK_POWER_COST,
@@ -74,7 +74,7 @@ const GameStateContext = createContext<GameState>({
   clickMachineLevel: 0,
   clickMachineCost: BASE_CLICK_MACHINE_COST,
   
-  addClicks: () => {},
+  addDilithium: () => {}, // Переименовано с addClicks на addDilithium
   upgradeClickPower: () => {},
   upgradePassiveIncome: () => {},
   
@@ -89,7 +89,7 @@ const GameStateContext = createContext<GameState>({
 
 // Provider component
 export function GameStateProvider({ children }: { children: React.ReactNode }) {
-  const [clicks, setClicks] = useState(0);
+  const [dilithium, setDilithium] = useState(0); // Переименовано с clicks на dilithium
   const [clickPower, setClickPower] = useState(1);
   const [clickPowerLevel, setClickPowerLevel] = useState(0);
   const [clickPowerCost, setClickPowerCost] = useState(BASE_CLICK_POWER_COST);
@@ -116,21 +116,21 @@ export function GameStateProvider({ children }: { children: React.ReactNode }) {
     if (passiveIncome === 0) return;
     
     const interval = setInterval(() => {
-      setClicks(prev => prev + passiveIncome);
+      setDilithium(prev => prev + passiveIncome); // Переименовано с setClicks на setDilithium
     }, 1000);
     
     return () => clearInterval(interval);
   }, [passiveIncome]);
   
-  // Add clicks (from clicking or passive income)
-  const addClicks = (amount: number) => {
-    setClicks(prev => prev + amount);
+  // Add dilithium (from clicking or passive income)
+  const addDilithium = (amount: number) => { // Переименовано с addClicks на addDilithium
+    setDilithium(prev => prev + amount); // Переименовано с setClicks на setDilithium
   };
   
   // Upgrade click power
   const upgradeClickPower = () => {
-    if (clicks >= clickPowerCost) {
-      setClicks(prev => prev - clickPowerCost);
+    if (dilithium >= clickPowerCost) { // Переименовано с clicks на dilithium
+      setDilithium(prev => prev - clickPowerCost); // Переименовано с setClicks на setDilithium
       setClickPowerLevel(prev => prev + 1);
       setClickPower(prev => prev + 1);
       setClickPowerCost(prev => Math.floor(prev * UPGRADE_COST_MULTIPLIER));
@@ -140,8 +140,8 @@ export function GameStateProvider({ children }: { children: React.ReactNode }) {
   
   // Upgrade passive income
   const upgradePassiveIncome = () => {
-    if (clicks >= passiveIncomeCost) {
-      setClicks(prev => prev - passiveIncomeCost);
+    if (dilithium >= passiveIncomeCost) { // Переименовано с clicks на dilithium
+      setDilithium(prev => prev - passiveIncomeCost); // Переименовано с setClicks на setDilithium
       setPassiveIncomeLevel(prev => prev + 1);
       setPassiveIncome(prev => prev + 1);
       setPassiveIncomeCost(prev => Math.floor(prev * UPGRADE_COST_MULTIPLIER));
@@ -153,8 +153,8 @@ export function GameStateProvider({ children }: { children: React.ReactNode }) {
   
   // Upgrade enhanced click (+5 click power)
   const upgradeEnhancedClick = () => {
-    if (clicks >= enhancedClickCost) {
-      setClicks(prev => prev - enhancedClickCost);
+    if (dilithium >= enhancedClickCost) { // Переименовано с clicks на dilithium
+      setDilithium(prev => prev - enhancedClickCost); // Переименовано с setClicks на setDilithium
       setEnhancedClickLevel(prev => prev + 1);
       setClickPower(prev => prev + 5);
       setEnhancedClickCost(prev => Math.floor(prev * UPGRADE_COST_MULTIPLIER));
@@ -162,10 +162,10 @@ export function GameStateProvider({ children }: { children: React.ReactNode }) {
     }
   };
   
-  // Upgrade fast flow (+6 clicks per second)
+  // Upgrade fast flow (+6 dilithium per second)
   const upgradeFastFlow = () => {
-    if (clicks >= fastFlowCost) {
-      setClicks(prev => prev - fastFlowCost);
+    if (dilithium >= fastFlowCost) { // Переименовано с clicks на dilithium
+      setDilithium(prev => prev - fastFlowCost); // Переименовано с setClicks на setDilithium
       setFastFlowLevel(prev => prev + 1);
       setPassiveIncome(prev => prev + 6);
       setFastFlowCost(prev => Math.floor(prev * UPGRADE_COST_MULTIPLIER));
@@ -175,8 +175,8 @@ export function GameStateProvider({ children }: { children: React.ReactNode }) {
   
   // Upgrade powerful hit (+100 click power)
   const upgradePowerfulHit = () => {
-    if (clicks >= powerfulHitCost) {
-      setClicks(prev => prev - powerfulHitCost);
+    if (dilithium >= powerfulHitCost) { // Переименовано с clicks на dilithium
+      setDilithium(prev => prev - powerfulHitCost); // Переименовано с setClicks на setDilithium
       setPowerfulHitLevel(prev => prev + 1);
       setClickPower(prev => prev + 100);
       setPowerfulHitCost(prev => Math.floor(prev * UPGRADE_COST_MULTIPLIER));
@@ -184,10 +184,10 @@ export function GameStateProvider({ children }: { children: React.ReactNode }) {
     }
   };
   
-  // Upgrade golden shower (+200 clicks per second)
+  // Upgrade golden shower (+200 dilithium per second)
   const upgradeGoldenShower = () => {
-    if (clicks >= goldenShowerCost) {
-      setClicks(prev => prev - goldenShowerCost);
+    if (dilithium >= goldenShowerCost) { // Переименовано с clicks на dilithium
+      setDilithium(prev => prev - goldenShowerCost); // Переименовано с setClicks на setDilithium
       setGoldenShowerLevel(prev => prev + 1);
       setPassiveIncome(prev => prev + 200);
       setGoldenShowerCost(prev => Math.floor(prev * UPGRADE_COST_MULTIPLIER));
@@ -197,8 +197,8 @@ export function GameStateProvider({ children }: { children: React.ReactNode }) {
   
   // Upgrade giant strength (+1000 click power)
   const upgradeGiantStrength = () => {
-    if (clicks >= giantStrengthCost) {
-      setClicks(prev => prev - giantStrengthCost);
+    if (dilithium >= giantStrengthCost) { // Переименовано с clicks на dilithium
+      setDilithium(prev => prev - giantStrengthCost); // Переименовано с setClicks на setDilithium
       setGiantStrengthLevel(prev => prev + 1);
       setClickPower(prev => prev + 1000);
       setGiantStrengthCost(prev => Math.floor(prev * UPGRADE_COST_MULTIPLIER));
@@ -206,10 +206,10 @@ export function GameStateProvider({ children }: { children: React.ReactNode }) {
     }
   };
   
-  // Upgrade click machine (+5000 clicks per second)
+  // Upgrade click machine (+5000 dilithium per second)
   const upgradeClickMachine = () => {
-    if (clicks >= clickMachineCost) {
-      setClicks(prev => prev - clickMachineCost);
+    if (dilithium >= clickMachineCost) { // Переименовано с clicks на dilithium
+      setDilithium(prev => prev - clickMachineCost); // Переименовано с setClicks на setDilithium
       setClickMachineLevel(prev => prev + 1);
       setPassiveIncome(prev => prev + 5000);
       setClickMachineCost(prev => Math.floor(prev * UPGRADE_COST_MULTIPLIER));
@@ -218,7 +218,7 @@ export function GameStateProvider({ children }: { children: React.ReactNode }) {
   };
   
   const value = {
-    clicks,
+    dilithium, // Переименовано с clicks на dilithium
     clickPower,
     clickPowerLevel,
     clickPowerCost,
@@ -240,7 +240,7 @@ export function GameStateProvider({ children }: { children: React.ReactNode }) {
     clickMachineLevel,
     clickMachineCost,
     
-    addClicks,
+    addDilithium, // Переименовано с addClicks на addDilithium
     upgradeClickPower,
     upgradePassiveIncome,
     
