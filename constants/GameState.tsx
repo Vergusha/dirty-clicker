@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
+import { playUpgradeSound } from './Sounds';
 
 // Game state interface
 interface GameState {
@@ -133,6 +134,7 @@ export function GameStateProvider({ children }: { children: React.ReactNode }) {
       setClickPowerLevel(prev => prev + 1);
       setClickPower(prev => prev + 1);
       setClickPowerCost(prev => Math.floor(prev * UPGRADE_COST_MULTIPLIER));
+      playUpgradeSound(); // Play upgrade sound
     }
   };
   
@@ -143,6 +145,7 @@ export function GameStateProvider({ children }: { children: React.ReactNode }) {
       setPassiveIncomeLevel(prev => prev + 1);
       setPassiveIncome(prev => prev + 1);
       setPassiveIncomeCost(prev => Math.floor(prev * UPGRADE_COST_MULTIPLIER));
+      playUpgradeSound(); // Play upgrade sound
     }
   };
   
@@ -155,6 +158,7 @@ export function GameStateProvider({ children }: { children: React.ReactNode }) {
       setEnhancedClickLevel(prev => prev + 1);
       setClickPower(prev => prev + 5);
       setEnhancedClickCost(prev => Math.floor(prev * UPGRADE_COST_MULTIPLIER));
+      playUpgradeSound(); // Play upgrade sound
     }
   };
   
@@ -165,6 +169,7 @@ export function GameStateProvider({ children }: { children: React.ReactNode }) {
       setFastFlowLevel(prev => prev + 1);
       setPassiveIncome(prev => prev + 6);
       setFastFlowCost(prev => Math.floor(prev * UPGRADE_COST_MULTIPLIER));
+      playUpgradeSound(); // Play upgrade sound
     }
   };
   
@@ -175,6 +180,7 @@ export function GameStateProvider({ children }: { children: React.ReactNode }) {
       setPowerfulHitLevel(prev => prev + 1);
       setClickPower(prev => prev + 100);
       setPowerfulHitCost(prev => Math.floor(prev * UPGRADE_COST_MULTIPLIER));
+      playUpgradeSound(); // Play upgrade sound
     }
   };
   
@@ -185,6 +191,7 @@ export function GameStateProvider({ children }: { children: React.ReactNode }) {
       setGoldenShowerLevel(prev => prev + 1);
       setPassiveIncome(prev => prev + 200);
       setGoldenShowerCost(prev => Math.floor(prev * UPGRADE_COST_MULTIPLIER));
+      playUpgradeSound(); // Play upgrade sound
     }
   };
   
@@ -195,6 +202,7 @@ export function GameStateProvider({ children }: { children: React.ReactNode }) {
       setGiantStrengthLevel(prev => prev + 1);
       setClickPower(prev => prev + 1000);
       setGiantStrengthCost(prev => Math.floor(prev * UPGRADE_COST_MULTIPLIER));
+      playUpgradeSound(); // Play upgrade sound
     }
   };
   
@@ -205,6 +213,7 @@ export function GameStateProvider({ children }: { children: React.ReactNode }) {
       setClickMachineLevel(prev => prev + 1);
       setPassiveIncome(prev => prev + 5000);
       setClickMachineCost(prev => Math.floor(prev * UPGRADE_COST_MULTIPLIER));
+      playUpgradeSound(); // Play upgrade sound
     }
   };
   

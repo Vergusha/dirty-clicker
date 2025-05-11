@@ -2,9 +2,16 @@ import React from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { useGameState } from '@/constants/GameState';
+import { playClickSound } from '@/constants/Sounds';
 
 export default function HomeScreen() {
   const { clicks, clickPower, passiveIncome, addClicks } = useGameState();
+
+  // Function to handle button click with sound
+  const handleClick = () => {
+    playClickSound();
+    addClicks(clickPower);
+  };
 
   return (
     <View style={styles.container}>
@@ -14,7 +21,7 @@ export default function HomeScreen() {
       )}
       <Pressable 
         style={styles.button} 
-        onPress={() => addClicks(clickPower)}
+        onPress={handleClick}
       >
         <Text style={styles.buttonText}>Клик! (+{clickPower})</Text>
       </Pressable>
