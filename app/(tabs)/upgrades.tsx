@@ -1,5 +1,5 @@
 import React from 'react';
-import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { ImageBackground, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 
 import { useGameState } from '@/constants/GameState';
 
@@ -49,7 +49,12 @@ export default function UpgradesScreen() {
     onUpgrade: () => void,
     disabled: boolean
   ) => (
-    <View style={styles.upgradeCard}>
+    <ImageBackground 
+      source={require('@/assets/images/upgrade_panel.png')} 
+      style={styles.upgradeCard}
+      imageStyle={styles.upgradeCardImage}
+      resizeMode="stretch"
+    >
       <View style={styles.upgradeInfo}>
         <Text style={styles.upgradeName}>{title}</Text>
         <Text style={styles.upgradeDescription}>{description}</Text>
@@ -58,16 +63,24 @@ export default function UpgradesScreen() {
         </Text>
       </View>
       
-      <Pressable
-        style={[styles.upgradeButton, disabled && styles.disabledButton]}
-        onPress={onUpgrade}
-        disabled={disabled}
-      >
-        <Text style={styles.upgradeButtonText}>
-          Улучшить {cost} 👆
-        </Text>
-      </Pressable>
-    </View>
+      <View style={styles.upgradeButtonWrapper}>
+        <Pressable
+          style={styles.upgradeButtonContainer}
+          onPress={onUpgrade}
+          disabled={disabled}
+        >
+          <ImageBackground
+            source={require('@/assets/images/upgrade button.png')}
+            style={[styles.upgradeButton, disabled && styles.disabledButton]}
+            resizeMode="stretch"
+          >
+            <Text style={styles.upgradeButtonText}>
+              {cost} 👆
+            </Text>
+          </ImageBackground>
+        </Pressable>
+      </View>
+    </ImageBackground>
   );
 
   return (
@@ -211,10 +224,13 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   upgradeCard: {
-    backgroundColor: '#1E1E1E',
     borderRadius: 10,
     padding: 16,
     marginBottom: 16,
+    overflow: 'hidden',
+  },
+  upgradeCardImage: {
+    borderRadius: 10,
   },
   upgradeInfo: {
     marginBottom: 12,
@@ -224,28 +240,50 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: 'white',
     marginBottom: 4,
+    textShadowColor: 'rgba(0, 0, 0, 0.75)',
+    textShadowOffset: { width: 1, height: 1 },
+    textShadowRadius: 2,
   },
   upgradeDescription: {
     fontSize: 16,
-    color: '#BBBBBB',
+    color: '#FFFFFF',
     marginBottom: 8,
+    textShadowColor: 'rgba(0, 0, 0, 0.75)',
+    textShadowOffset: { width: 1, height: 1 },
+    textShadowRadius: 2,
   },
   upgradeStats: {
     fontSize: 14,
-    color: '#888888',
+    color: '#DDDDDD',
+    textShadowColor: 'rgba(0, 0, 0, 0.75)',
+    textShadowOffset: { width: 1, height: 1 },
+    textShadowRadius: 2,
+  },
+  upgradeButtonWrapper: {
+    width: '100%',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingTop: 8,
+  },
+  upgradeButtonContainer: {
+    width: '80%',
+    alignSelf: 'center',
   },
   upgradeButton: {
-    backgroundColor: '#4CAF50',
-    paddingVertical: 12,
-    borderRadius: 8,
+    width: '100%',
+    height: 50,
+    justifyContent: 'center',
     alignItems: 'center',
   },
   disabledButton: {
-    backgroundColor: '#1E3D1E',
+    opacity: 0.5,
   },
   upgradeButtonText: {
     color: 'white',
     fontSize: 16,
     fontWeight: 'bold',
+    textShadowColor: 'rgba(0, 0, 0, 0.75)',
+    textShadowOffset: { width: 1, height: 1 },
+    textShadowRadius: 2,
   },
 });

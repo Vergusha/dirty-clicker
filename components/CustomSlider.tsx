@@ -1,7 +1,6 @@
 import NativeSlider from '@react-native-community/slider';
 import React from 'react';
 import { Platform, StyleSheet, View } from 'react-native';
-import { WebSlider } from './WebSlider';
 
 interface CustomSliderProps {
   value: number;

@@ -10,7 +10,7 @@ import {
 } from '@/constants/Sounds';
 import { MaterialIcons } from '@expo/vector-icons';
 import React, { useEffect, useState } from 'react';
-import { Modal, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Dimensions, Image, ImageBackground, Modal, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import CustomSlider from './CustomSlider';
 
 interface SettingsModalProps {
@@ -65,70 +65,84 @@ export default function SettingsModal({ visible, onClose }: SettingsModalProps) 
       onRequestClose={onClose}
     >
       <View style={styles.centeredView}>
-        <View style={styles.modalView}>
-          <View style={styles.modalHeader}>
-            <Text style={styles.modalTitle}>Настройки</Text>
-            <TouchableOpacity onPress={onClose}>
-              <MaterialIcons name="close" size={24} color="#FFFFFF" />
-            </TouchableOpacity>
-          </View>
-          
-          <View style={styles.settingRow}>
-            <Text style={styles.settingLabel}>Звуковые эффекты</Text>
-            <View style={styles.controls}>
-              <CustomSlider
-                style={styles.slider}
-                minimumValue={0}
-                maximumValue={1}
-                value={soundEffectsVolume}
-                onValueChange={handleSoundEffectsVolumeChange}
-                minimumTrackTintColor="#4CAF50"
-                maximumTrackTintColor="#333333"
-                thumbTintColor="#4CAF50"
-                disabled={!soundEffectsEnabled}
-              />
-              <TouchableOpacity onPress={handleSoundEffectsToggle}>
-                <MaterialIcons 
-                  name={soundEffectsEnabled ? "volume-up" : "volume-off"} 
-                  size={24} 
-                  color="#FFFFFF" 
+        <ImageBackground 
+          source={require('@/assets/images/settings_panel.png')} 
+          style={styles.modalView}
+          imageStyle={styles.modalBackground}
+          resizeMode="stretch"
+        >
+          <View style={styles.modalContent}>
+            <View style={styles.modalHeader}>
+              <Text style={styles.modalTitle}>Настройки</Text>
+              <TouchableOpacity onPress={onClose} style={styles.closeButtonContainer}>
+                <Image 
+                  source={require('@/assets/images/close_button.png')}
+                  style={styles.closeButton}
+                  resizeMode="contain"
                 />
               </TouchableOpacity>
             </View>
-          </View>
-          
-          <View style={styles.settingRow}>
-            <Text style={styles.settingLabel}>Фоновая музыка</Text>
-            <View style={styles.controls}>
-              <CustomSlider
-                style={styles.slider}
-                minimumValue={0}
-                maximumValue={1}
-                value={ambientVolume}
-                onValueChange={handleAmbientVolumeChange}
-                minimumTrackTintColor="#4CAF50"
-                maximumTrackTintColor="#333333"
-                thumbTintColor="#4CAF50"
-                disabled={!ambientEnabled}
-              />
-              <TouchableOpacity onPress={handleAmbientToggle}>
-                <MaterialIcons 
-                  name={ambientEnabled ? "volume-up" : "volume-off"} 
-                  size={24} 
-                  color="#FFFFFF" 
+            
+            <View style={styles.settingRow}>
+              <Text style={styles.settingLabel}>Звуковые эффекты</Text>
+              <View style={styles.controls}>
+                <CustomSlider
+                  style={styles.slider}
+                  minimumValue={0}
+                  maximumValue={1}
+                  value={soundEffectsVolume}
+                  onValueChange={handleSoundEffectsVolumeChange}
+                  minimumTrackTintColor="#4CAF50"
+                  maximumTrackTintColor="#333333"
+                  thumbTintColor="#4CAF50"
+                  disabled={!soundEffectsEnabled}
                 />
-              </TouchableOpacity>
+                <TouchableOpacity onPress={handleSoundEffectsToggle}>
+                  <MaterialIcons 
+                    name={soundEffectsEnabled ? "volume-up" : "volume-off"} 
+                    size={24} 
+                    color="#FFFFFF" 
+                  />
+                </TouchableOpacity>
+              </View>
+            </View>
+            
+            <View style={styles.settingRow}>
+              <Text style={styles.settingLabel}>Фоновая музыка</Text>
+              <View style={styles.controls}>
+                <CustomSlider
+                  style={styles.slider}
+                  minimumValue={0}
+                  maximumValue={1}
+                  value={ambientVolume}
+                  onValueChange={handleAmbientVolumeChange}
+                  minimumTrackTintColor="#4CAF50"
+                  maximumTrackTintColor="#333333"
+                  thumbTintColor="#4CAF50"
+                  disabled={!ambientEnabled}
+                />
+                <TouchableOpacity onPress={handleAmbientToggle}>
+                  <MaterialIcons 
+                    name={ambientEnabled ? "volume-up" : "volume-off"} 
+                    size={24} 
+                    color="#FFFFFF" 
+                  />
+                </TouchableOpacity>
+              </View>
+            </View>
+            
+            <View style={styles.footer}>
+              <Text style={styles.attribution}>Music by Clavier</Text>
             </View>
           </View>
-          
-          <View style={styles.footer}>
-            <Text style={styles.attribution}>Music by Clavier</Text>
-          </View>
-        </View>
+        </ImageBackground>
       </View>
     </Modal>
   );
 }
+
+const { width } = Dimensions.get('window');
+const isSmallDevice = width < 380;
 
 const styles = StyleSheet.create({
   centeredView: {
@@ -138,54 +152,74 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(0, 0, 0, 0.7)'
   },
   modalView: {
-    width: '90%',
-    backgroundColor: '#1E1E1E',
-    borderRadius: 10,
+    width: isSmallDevice ? '100%' : '100%',
+    aspectRatio: 0.9,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  modalBackground: {
+    borderRadius: 12,
+  },
+  modalContent: {
+    width: '100%',
+    height: '100%',
     padding: 20,
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 2
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 4,
-    elevation: 5
   },
   modalHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 20
+    marginBottom: 25,
   },
   modalTitle: {
     fontSize: 24,
     fontWeight: 'bold',
-    color: '#FFFFFF'
+    color: '#FFFFFF',
+    textShadowColor: 'rgba(0, 0, 0, 0.75)',
+    textShadowOffset: { width: 1, height: 1 },
+    textShadowRadius: 2,
   },
   settingRow: {
-    marginBottom: 20
+    marginBottom: 25,
+    width: '100%',
   },
   settingLabel: {
     fontSize: 16,
     color: '#FFFFFF',
-    marginBottom: 8
+    marginBottom: 10,
+    textShadowColor: 'rgba(0, 0, 0, 0.75)',
+    textShadowOffset: { width: 1, height: 1 },
+    textShadowRadius: 2,
   },
   controls: {
     flexDirection: 'row',
-    alignItems: 'center'
+    alignItems: 'center',
+    width: '100%',
   },
   slider: {
     flex: 1,
     height: 40,
-    marginRight: 10
+    marginRight: 15,
   },
   footer: {
-    marginTop: 20,
-    alignItems: 'center'
+    marginTop: 'auto',
+    alignItems: 'center',
+    paddingBottom: 10,
   },
   attribution: {
-    color: '#888888',
+    color: '#DDDDDD',
     fontSize: 14,
-    fontStyle: 'italic'
-  }
+    fontStyle: 'italic',
+    textShadowColor: 'rgba(0, 0, 0, 0.75)',
+    textShadowOffset: { width: 1, height: 1 },
+    textShadowRadius: 2,
+  },
+  closeButtonContainer: {
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  closeButton: {
+    width: 32,
+    height: 32,
+  },
 });
