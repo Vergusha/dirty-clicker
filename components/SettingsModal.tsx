@@ -8,6 +8,7 @@ import {
     toggleAmbientMusic,
     toggleSoundEffects
 } from '@/constants/Sounds';
+import { Language, useLocalization } from '@/constants/localization/LocalizationContext';
 import React, { useEffect, useState } from 'react';
 import { Dimensions, Image, ImageBackground, Modal, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import CustomSlider from './CustomSlider';
@@ -18,6 +19,9 @@ interface SettingsModalProps {
 }
 
 export default function SettingsModal({ visible, onClose }: SettingsModalProps) {
+  // Get localization context
+  const { t, locale, setLocale, languages } = useLocalization();
+  
   // Инициализируем состояния при открытии модального окна
   const [soundEffectsEnabled, setSoundEffectsEnabled] = useState(false);
   const [ambientEnabled, setAmbientEnabled] = useState(false);
@@ -55,6 +59,10 @@ export default function SettingsModal({ visible, onClose }: SettingsModalProps) 
     setAmbientVolume(value);
     setAmbientMusicVolume(value);
   };
+
+  const handleLanguageChange = (lang: Language) => {
+    setLocale(lang);
+  };
   
   return (
     <Modal
@@ -72,7 +80,7 @@ export default function SettingsModal({ visible, onClose }: SettingsModalProps) 
         >
           <View style={styles.modalContent}>
             <View style={styles.modalHeader}>
-              <Text style={styles.modalTitle}>Настройки</Text>
+              <Text style={styles.modalTitle}>{t('settings')}</Text>
               <TouchableOpacity onPress={onClose} style={styles.closeButtonContainer}>
                 <Image 
                   source={require('@/assets/images/close_button.png')}
@@ -83,7 +91,7 @@ export default function SettingsModal({ visible, onClose }: SettingsModalProps) 
             </View>
             
             <View style={styles.settingRow}>
-              <Text style={styles.settingLabel}>Звуковые эффекты</Text>
+              <Text style={styles.settingLabel}>{t('soundEffects')}</Text>
               <View style={styles.controls}>
                 <CustomSlider
                   style={styles.slider}
@@ -110,7 +118,7 @@ export default function SettingsModal({ visible, onClose }: SettingsModalProps) 
             </View>
             
             <View style={styles.settingRow}>
-              <Text style={styles.settingLabel}>Фоновая музыка</Text>
+              <Text style={styles.settingLabel}>{t('music')}</Text>
               <View style={styles.controls}>
                 <CustomSlider
                   style={styles.slider}
@@ -133,6 +141,32 @@ export default function SettingsModal({ visible, onClose }: SettingsModalProps) 
                     resizeMode="contain"
                   />
                 </TouchableOpacity>
+              </View>
+            </View>
+            
+            {/* Language Selection */}
+            <View style={styles.settingRow}>
+              <Text style={styles.settingLabel}>{t('language')}</Text>
+              <View style={styles.languageSelector}>
+                {languages.map((lang) => (
+                  <TouchableOpacity
+                    key={lang.code}
+                    style={[
+                      styles.languageButton,
+                      locale === lang.code ? styles.selectedLanguage : null
+                    ]}
+                    onPress={() => handleLanguageChange(lang.code)}
+                  >
+                    <Text 
+                      style={[
+                        styles.languageText,
+                        locale === lang.code ? styles.selectedLanguageText : null
+                      ]}
+                    >
+                      {lang.name}
+                    </Text>
+                  </TouchableOpacity>
+                ))}
               </View>
             </View>
             
@@ -236,5 +270,32 @@ const styles = StyleSheet.create({
   soundIcon: {
     width: 32,
     height: 32,
+  },
+  languageSelector: {
+    flexDirection: 'row',
+    justifyContent: 'flex-start',
+    marginTop: 5,
+  },
+  languageButton: {
+    paddingVertical: 8,
+    paddingHorizontal: 16,
+    marginRight: 10,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: '#4CAF50',
+    backgroundColor: 'rgba(0, 0, 0, 0.3)',
+  },
+  selectedLanguage: {
+    backgroundColor: '#4CAF50',
+  },
+  languageText: {
+    color: '#FFFFFF',
+    fontSize: 14,
+    textShadowColor: 'rgba(0, 0, 0, 0.75)',
+    textShadowOffset: { width: 1, height: 1 },
+    textShadowRadius: 2,
+  },
+  selectedLanguageText: {
+    fontWeight: 'bold',
   },
 });

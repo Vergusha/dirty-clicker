@@ -7,6 +7,7 @@ import 'react-native-reanimated';
 
 import { GameStateProvider } from '@/constants/GameState';
 import { loadSounds, unloadSounds } from '@/constants/Sounds';
+import { LocalizationProvider } from '@/constants/localization/LocalizationContext';
 import { useColorScheme } from '@/hooks/useColorScheme';
 
 export default function RootLayout() {
@@ -31,14 +32,16 @@ export default function RootLayout() {
   }
 
   return (
-    <GameStateProvider>
-      <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-        <Stack>
-          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-          <Stack.Screen name="+not-found" />
-        </Stack>
-        <StatusBar style="auto" />
-      </ThemeProvider>
-    </GameStateProvider>
+    <LocalizationProvider>
+      <GameStateProvider>
+        <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
+          <Stack>
+            <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+            <Stack.Screen name="+not-found" />
+          </Stack>
+          <StatusBar style="auto" />
+        </ThemeProvider>
+      </GameStateProvider>
+    </LocalizationProvider>
   );
 }

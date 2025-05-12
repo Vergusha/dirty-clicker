@@ -10,6 +10,7 @@ interface GameState {
   passiveIncome: number;
   passiveIncomeLevel: number;
   passiveIncomeCost: number;
+  firstPassiveUpgradeShown: boolean; // Flag for showing first passive upgrade tutorial
   
   // New upgrade types
   enhancedClickLevel: number;
@@ -29,6 +30,7 @@ interface GameState {
   addDilithium: (amount: number) => void; // Переименовано с addClicks на addDilithium
   upgradeClickPower: () => void;
   upgradePassiveIncome: () => void;
+  setFirstPassiveUpgradeShown: (shown: boolean) => void; // New function to set tutorial flag
   
   // New upgrade actions
   upgradeEnhancedClick: () => void;
@@ -59,6 +61,7 @@ const GameStateContext = createContext<GameState>({
   passiveIncome: 0,
   passiveIncomeLevel: 0,
   passiveIncomeCost: BASE_PASSIVE_INCOME_COST,
+  firstPassiveUpgradeShown: false, // Default value for tutorial flag
   
   // New upgrade defaults
   enhancedClickLevel: 0,
@@ -77,6 +80,7 @@ const GameStateContext = createContext<GameState>({
   addDilithium: () => {}, // Переименовано с addClicks на addDilithium
   upgradeClickPower: () => {},
   upgradePassiveIncome: () => {},
+  setFirstPassiveUpgradeShown: () => {}, // Default implementation
   
   // New upgrade actions
   upgradeEnhancedClick: () => {},
@@ -96,6 +100,7 @@ export function GameStateProvider({ children }: { children: React.ReactNode }) {
   const [passiveIncome, setPassiveIncome] = useState(0);
   const [passiveIncomeLevel, setPassiveIncomeLevel] = useState(0);
   const [passiveIncomeCost, setPassiveIncomeCost] = useState(BASE_PASSIVE_INCOME_COST);
+  const [firstPassiveUpgradeShown, setFirstPassiveUpgradeShown] = useState(false);
   
   // New upgrade states
   const [enhancedClickLevel, setEnhancedClickLevel] = useState(0);
@@ -225,6 +230,7 @@ export function GameStateProvider({ children }: { children: React.ReactNode }) {
     passiveIncome,
     passiveIncomeLevel,
     passiveIncomeCost,
+    firstPassiveUpgradeShown,
     
     // New upgrade properties
     enhancedClickLevel,
@@ -243,6 +249,7 @@ export function GameStateProvider({ children }: { children: React.ReactNode }) {
     addDilithium, // Переименовано с addClicks на addDilithium
     upgradeClickPower,
     upgradePassiveIncome,
+    setFirstPassiveUpgradeShown,
     
     // New upgrade functions
     upgradeEnhancedClick,

@@ -4,10 +4,12 @@ import { Image, StyleSheet } from 'react-native';
 
 import CustomTabBar from '@/components/CustomTabBar';
 import { Colors } from '@/constants/Colors';
+import { useLocalization } from '@/constants/localization/LocalizationContext';
 import { useColorScheme } from '@/hooks/useColorScheme';
 
 export default function TabLayout() {
   const colorScheme = useColorScheme();
+  const { t } = useLocalization();
 
   return (
     <Tabs
@@ -21,7 +23,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="index"
         options={{
-          title: 'Игра',
+          title: t('tabs.game'),
           tabBarIcon: ({ focused }) => (
             <Image 
               source={require('@/assets/images/game.png')} 
@@ -37,7 +39,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="upgrades"
         options={{
-          title: 'Улучшения',
+          title: t('tabs.upgrades'),
           tabBarIcon: ({ focused }) => (
             <Image 
               source={require('@/assets/images/spaceship.png')} 
