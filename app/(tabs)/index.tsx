@@ -4,6 +4,8 @@ import { Animated, Dimensions, Image, ImageBackground, Pressable, StyleSheet, Te
 
 import AlienDialog from '@/components/AlienDialog';
 import SettingsModal from '@/components/SettingsModal';
+import TradingStationModal from '@/components/TradingStationModal';
+import TopResourceBar from '@/components/ui/TopResourceBar';
 import { useGameState } from '@/constants/GameState';
 import { useLocalization } from '@/constants/localization/LocalizationContext';
 import {
@@ -29,11 +31,14 @@ export default function HomeScreen() {
   const { t } = useLocalization();
   const { 
     dilithium, 
+    coins, 
     clickPower, 
     passiveIncome, 
     addDilithium, 
     firstPassiveUpgradeShown, 
-    setFirstPassiveUpgradeShown 
+    setFirstPassiveUpgradeShown,
+    tradingStationVisible,
+    setTradingStationVisible
   } = useGameState();
   
   const [settingsVisible, setSettingsVisible] = useState(false);
@@ -75,13 +80,14 @@ export default function HomeScreen() {
   // Check if it's time to show a meteor
   useEffect(() => {
     const checkMeteorInterval = setInterval(() => {
-      if (!meteorVisible && Date.now() - lastMeteorTime >= METEOR_INTERVAL) {
+      // Only check for meteors if player has passive income
+      if (!meteorVisible && passiveIncome > 0 && Date.now() - lastMeteorTime >= METEOR_INTERVAL) {
         showMeteor();
       }
     }, METEOR_CHECK_INTERVAL);
 
     return () => clearInterval(checkMeteorInterval);
-  }, [meteorVisible, lastMeteorTime]);
+  }, [meteorVisible, lastMeteorTime, passiveIncome]); // Add passiveIncome as dependency
 
   // Animate meteor when visible
   useEffect(() => {
@@ -89,36 +95,53 @@ export default function HomeScreen() {
 
     if (meteorVisible) {
       const animateMeteor = () => {
-        // Get current position
-        const currentX = meteorPosition.x._value;
-
+        // Create local variables to track position
+        let currentX = 0;
+        let currentY = 0;
+        
+        // Get current position using listeners
+        const xListener = meteorPosition.x.addListener(value => { currentX = value.value; });
+        const yListener = meteorPosition.y.addListener(value => { currentY = value.value; });
+        
         // Calculate next position based on direction
         let nextX;
         if (meteorDirection === 'left-to-right') {
           nextX = currentX + METEOR_ANIMATION_SPEED;
           
-          // Check if meteor is off-screen
+          // Check if meteor is off-screen on the right
           if (nextX > windowWidth + METEOR_SIZE) {
+            meteorPosition.x.removeListener(xListener);
+            meteorPosition.y.removeListener(yListener);
             setMeteorVisible(false);
             return;
           }
         } else {
           nextX = currentX - METEOR_ANIMATION_SPEED;
           
-          // Check if meteor is off-screen
-          if (nextX < -METEOR_SIZE) {
+          // Check if meteor is off-screen on the left
+          if (nextX < -METEOR_SIZE * 1.5) {
+            meteorPosition.x.removeListener(xListener);
+            meteorPosition.y.removeListener(yListener);
             setMeteorVisible(false);
             return;
           }
         }
 
         // Update position
-        meteorPosition.setValue({ x: nextX, y: meteorPosition.y._value });
+        meteorPosition.setValue({ 
+          x: nextX, 
+          y: currentY
+        });
+        
+        // Remove listeners to prevent memory leaks
+        meteorPosition.x.removeListener(xListener);
+        meteorPosition.y.removeListener(yListener);
         
         // Continue animation
         animationFrameId = requestAnimationFrame(animateMeteor);
       };
 
+      // Start animation
       animationFrameId = requestAnimationFrame(animateMeteor);
     }
 
@@ -127,20 +150,29 @@ export default function HomeScreen() {
         cancelAnimationFrame(animationFrameId);
       }
     };
-  }, [meteorVisible, meteorDirection]);
+  }, [meteorVisible, meteorDirection, meteorPosition, windowWidth]);
 
   // Show meteor
   const showMeteor = () => {
+    // Only show meteors if player has passive income
+    if (passiveIncome <= 0) {
+      return;
+    }
+    
     // Random direction
     const direction = Math.random() > 0.5 ? 'left-to-right' : 'right-to-left';
     setMeteorDirection(direction);
 
-    // Random Y position (avoiding bottom tab bar)
-    const maxY = windowHeight - METEOR_SIZE - BOTTOM_SAFE_AREA;
-    const randomY = Math.random() * (maxY * 0.7) + 100; // Keep meteor in top 70% of usable area, and below top bar
+    // Random Y position (avoiding bottom tab bar and top area)
+    // Keep meteor in middle 60% of usable area, well below top bar and above bottom tab
+    const minY = windowHeight * 0.2; // At least 20% from the top
+    const maxY = windowHeight * 0.8 - BOTTOM_SAFE_AREA; // At most 80% from the top, minus tab bar
+    const randomY = Math.random() * (maxY - minY) + minY; 
 
-    // Set initial X position based on direction
-    const initialX = direction === 'left-to-right' ? -METEOR_SIZE : windowWidth + METEOR_SIZE;
+    // Set initial X position based on direction, ensuring it's completely off-screen
+    const initialX = direction === 'left-to-right' ? 
+      -METEOR_SIZE * 1.5 : // Completely off-screen on the left
+      windowWidth + (METEOR_SIZE * 0.5); // Completely off-screen on the right
     
     // Set position
     meteorPosition.setValue({ x: initialX, y: randomY });
@@ -157,8 +189,9 @@ export default function HomeScreen() {
     playUpgradeSound();
     setMeteorVisible(false);
     
-    // Calculate reward (20x passive income)
-    const reward = passiveIncome * 20;
+    // Calculate reward (20x passive income), with a minimum value of 10
+    const baseReward = passiveIncome * 20;
+    const reward = Math.max(baseReward, 10); // Ensure minimum reward of 10
     
     // Add reward
     addDilithium(reward);
@@ -204,6 +237,11 @@ export default function HomeScreen() {
     setSettingsVisible(false);
   };
 
+  // Function to toggle trading station
+  const toggleTradingStation = () => {
+    setTradingStationVisible(true);
+  };
+
   return (
     <ImageBackground 
       source={require('@/assets/images/space.png')}
@@ -211,14 +249,20 @@ export default function HomeScreen() {
       resizeMode="cover"
     >
       <View style={styles.container}>
-        <View style={styles.resourceContainer}>
-          <Image
-            source={require('@/assets/images/dilithium.png')}
-            style={styles.dilithiumIcon}
+        {/* Top Resource Bar */}
+        <TopResourceBar />
+        
+        {/* Settings button positioned below the top bar */}
+        <Pressable 
+          style={styles.settingsButtonContainer}
+          onPress={openSettings}
+        >
+          <Image 
+            source={require('@/assets/images/settings_button.png')}
+            style={styles.settingsButton}
             resizeMode="contain"
           />
-          <Text style={styles.counter}>{t('dilithium')}: {dilithium}</Text>
-        </View>
+        </Pressable>
         
         {passiveIncome > 0 && (
           <Text style={styles.passive}>+{passiveIncome} {t('perSecond')}</Text>
@@ -237,6 +281,18 @@ export default function HomeScreen() {
             <Text style={styles.clickPowerText}>+{clickPower}</Text>
           )}
         </View>
+        
+        {/* Trading Station Button */}
+        <Pressable 
+          style={styles.tradingStationButton}
+          onPress={toggleTradingStation}
+        >
+          <Image 
+            source={require('@/assets/images/trading_station.png')}
+            style={styles.tradingStationImage}
+            resizeMode="contain"
+          />
+        </Pressable>
         
         {/* Meteor */}
         {meteorVisible && (
@@ -269,18 +325,6 @@ export default function HomeScreen() {
           </Animated.Text>
         )}
         
-        {/* Settings button */}
-        <Pressable 
-          style={styles.settingsButtonContainer}
-          onPress={openSettings}
-        >
-          <Image 
-            source={require('@/assets/images/settings_button.png')}
-            style={styles.settingsButton}
-            resizeMode="contain"
-          />
-        </Pressable>
-        
         {/* Settings Modal */}
         <SettingsModal 
           visible={settingsVisible}
@@ -291,6 +335,12 @@ export default function HomeScreen() {
         <AlienDialog 
           visible={alienDialogVisible}
           onClose={handleAlienDialogClose}
+        />
+        
+        {/* Trading Station Modal */}
+        <TradingStationModal
+          visible={tradingStationVisible}
+          onClose={() => setTradingStationVisible(false)}
         />
       </View>
     </ImageBackground>
@@ -308,24 +358,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center', 
     alignItems: 'center', 
     backgroundColor: 'rgba(0, 0, 0, 0.3)',
-  },
-  resourceContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: 8,
-  },
-  dilithiumIcon: {
-    width: 36,
-    height: 36,
-    marginRight: 10,
-  },
-  counter: {
-    fontSize: 36, 
-    color: 'white',
-    textShadowColor: 'rgba(0, 0, 0, 0.75)',
-    textShadowOffset: { width: 1, height: 1 },
-    textShadowRadius: 3,
   },
   passive: {
     fontSize: 18,
@@ -360,14 +392,18 @@ const styles = StyleSheet.create({
     textShadowOffset: { width: 1, height: 1 },
     textShadowRadius: 3,
   },
-  settingsButtonContainer: {
+  tradingStationButton: {
     position: 'absolute',
-    top: 50,
+    bottom: 100,
     right: 20,
+    width: 80,
+    height: 80,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
-  settingsButton: {
-    width: 40,
-    height: 40,
+  tradingStationImage: {
+    width: '100%',
+    height: '100%',
   },
   meteorContainer: {
     position: 'absolute',
@@ -393,5 +429,15 @@ const styles = StyleSheet.create({
     textShadowOffset: { width: 1, height: 1 },
     textShadowRadius: 3,
     top: '40%',
+  },
+  settingsButtonContainer: {
+    position: 'absolute',
+    top: 100, // Position below the top bar
+    right: 20, // Position on the right side
+    zIndex: 5,
+  },
+  settingsButton: {
+    width: 40,
+    height: 40,
   },
 });

@@ -4,6 +4,7 @@ import { playUpgradeSound } from './Sounds';
 // Game state interface
 interface GameState {
   dilithium: number; // Переименовано с clicks на dilithium
+  coins: number; // New currency: coins
   clickPower: number;
   clickPowerLevel: number;
   clickPowerCost: number;
@@ -26,11 +27,19 @@ interface GameState {
   clickMachineLevel: number;
   clickMachineCost: number;
   
+  // Trading station
+  tradingStationVisible: boolean; // Trading station visibility state
+  
   // Actions
   addDilithium: (amount: number) => void; // Переименовано с addClicks на addDilithium
+  addCoins: (amount: number) => void; // Add coins
   upgradeClickPower: () => void;
   upgradePassiveIncome: () => void;
   setFirstPassiveUpgradeShown: (shown: boolean) => void; // New function to set tutorial flag
+  
+  // Trading functions
+  tradeDilithiumForCoins: (dilithiumAmount: number) => void; // Trade dilithium for coins
+  setTradingStationVisible: (visible: boolean) => void; // Set trading station visibility
   
   // New upgrade actions
   upgradeEnhancedClick: () => void;
@@ -51,10 +60,12 @@ const BASE_GOLDEN_SHOWER_COST = 100000;
 const BASE_GIANT_STRENGTH_COST = 90000;
 const BASE_CLICK_MACHINE_COST = 315000;
 const UPGRADE_COST_MULTIPLIER = 1.15;
+const DILITHIUM_TO_COINS_RATE = 100; // Exchange rate: 100 dilithium = 1 coin
 
 // Create context with default values
 const GameStateContext = createContext<GameState>({
   dilithium: 0, // Переименовано с clicks на dilithium
+  coins: 0, // Start with 0 coins
   clickPower: 1,
   clickPowerLevel: 0,
   clickPowerCost: BASE_CLICK_POWER_COST,
@@ -77,10 +88,18 @@ const GameStateContext = createContext<GameState>({
   clickMachineLevel: 0,
   clickMachineCost: BASE_CLICK_MACHINE_COST,
   
+  // Trading station
+  tradingStationVisible: false,
+  
   addDilithium: () => {}, // Переименовано с addClicks на addDilithium
+  addCoins: () => {}, // Default coin addition function
   upgradeClickPower: () => {},
   upgradePassiveIncome: () => {},
   setFirstPassiveUpgradeShown: () => {}, // Default implementation
+  
+  // Trading functions
+  tradeDilithiumForCoins: () => {}, // Default trade function
+  setTradingStationVisible: () => {}, // Default visibility setter
   
   // New upgrade actions
   upgradeEnhancedClick: () => {},
@@ -94,6 +113,7 @@ const GameStateContext = createContext<GameState>({
 // Provider component
 export function GameStateProvider({ children }: { children: React.ReactNode }) {
   const [dilithium, setDilithium] = useState(0); // Переименовано с clicks на dilithium
+  const [coins, setCoins] = useState(0); // New state for coins
   const [clickPower, setClickPower] = useState(1);
   const [clickPowerLevel, setClickPowerLevel] = useState(0);
   const [clickPowerCost, setClickPowerCost] = useState(BASE_CLICK_POWER_COST);
@@ -101,6 +121,9 @@ export function GameStateProvider({ children }: { children: React.ReactNode }) {
   const [passiveIncomeLevel, setPassiveIncomeLevel] = useState(0);
   const [passiveIncomeCost, setPassiveIncomeCost] = useState(BASE_PASSIVE_INCOME_COST);
   const [firstPassiveUpgradeShown, setFirstPassiveUpgradeShown] = useState(false);
+  
+  // Trading station visibility state
+  const [tradingStationVisible, setTradingStationVisible] = useState(false);
   
   // New upgrade states
   const [enhancedClickLevel, setEnhancedClickLevel] = useState(0);
@@ -130,6 +153,25 @@ export function GameStateProvider({ children }: { children: React.ReactNode }) {
   // Add dilithium (from clicking or passive income)
   const addDilithium = (amount: number) => { // Переименовано с addClicks на addDilithium
     setDilithium(prev => prev + amount); // Переименовано с setClicks на setDilithium
+  };
+  
+  // Add coins
+  const addCoins = (amount: number) => {
+    setCoins(prev => prev + amount);
+  };
+  
+  // Trading dilithium for coins
+  const tradeDilithiumForCoins = (dilithiumAmount: number) => {
+    if (dilithium >= dilithiumAmount) {
+      const coinsToAdd = Math.floor(dilithiumAmount / DILITHIUM_TO_COINS_RATE);
+      if (coinsToAdd > 0) {
+        setDilithium(prev => prev - dilithiumAmount);
+        setCoins(prev => prev + coinsToAdd);
+        playUpgradeSound(); // Play sound for successful trade
+        return true;
+      }
+    }
+    return false;
   };
   
   // Upgrade click power
@@ -223,7 +265,8 @@ export function GameStateProvider({ children }: { children: React.ReactNode }) {
   };
   
   const value = {
-    dilithium, // Переименовано с clicks на dilithium
+    dilithium,
+    coins, // New coins currency
     clickPower,
     clickPowerLevel,
     clickPowerCost,
@@ -231,6 +274,9 @@ export function GameStateProvider({ children }: { children: React.ReactNode }) {
     passiveIncomeLevel,
     passiveIncomeCost,
     firstPassiveUpgradeShown,
+    
+    // Trading station
+    tradingStationVisible,
     
     // New upgrade properties
     enhancedClickLevel,
@@ -246,10 +292,15 @@ export function GameStateProvider({ children }: { children: React.ReactNode }) {
     clickMachineLevel,
     clickMachineCost,
     
-    addDilithium, // Переименовано с addClicks на addDilithium
+    addDilithium,
+    addCoins, // New add coins function
     upgradeClickPower,
     upgradePassiveIncome,
     setFirstPassiveUpgradeShown,
+    
+    // Trading functions
+    tradeDilithiumForCoins, // Trade dilithium for coins
+    setTradingStationVisible, // Set trading station visibility
     
     // New upgrade functions
     upgradeEnhancedClick,

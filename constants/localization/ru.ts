@@ -1,6 +1,7 @@
 export default {
   // General
   dilithium: 'Дилитий',
+  coins: 'Монеты', // New currency
   available: 'Доступно',
   
   // Navigation tabs
@@ -13,6 +14,20 @@ export default {
   perSecond: 'в секунду',
   meteor: {
     reward: '+{amount}',
+  },
+  
+  // Trading station
+  tradingStation: {
+    title: 'Космическая Торговая Станция',
+    description: 'Обменивайте дилитий на космические монеты!',
+    rate: 'Курс обмена: 100 дилития = 1 монета',
+    trade: 'Обменять',
+    close: 'Закрыть',
+    notEnough: 'Недостаточно дилития',
+    success: 'Обмен успешен!',
+    yourCoins: 'Ваши Монеты',
+    yourDilithium: 'Ваш Дилитий',
+    amountToTrade: 'Количество для обмена',
   },
   
   // Upgrades screen

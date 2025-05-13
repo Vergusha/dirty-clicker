@@ -1,6 +1,7 @@
 export default {
   // General
   dilithium: 'Dilithium',
+  coins: 'Coins', // New currency
   available: 'Available',
   
   // Navigation tabs
@@ -13,6 +14,20 @@ export default {
   perSecond: 'per second',
   meteor: {
     reward: '+{amount}',
+  },
+  
+  // Trading station
+  tradingStation: {
+    title: 'Space Trading Station',
+    description: 'Trade your dilithium for cosmic coins!',
+    rate: 'Exchange Rate: 100 dilithium = 1 coin',
+    trade: 'Trade',
+    close: 'Close',
+    notEnough: 'Not enough dilithium',
+    success: 'Trade successful!',
+    yourCoins: 'Your Coins',
+    yourDilithium: 'Your Dilithium',
+    amountToTrade: 'Amount to Trade',
   },
   
   // Upgrades screen

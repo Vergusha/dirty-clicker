@@ -1,4 +1,5 @@
 import { Tabs } from 'expo-router';
+import { Stack } from 'expo-router';
 import React from 'react';
 import { Image, StyleSheet } from 'react-native';
 
